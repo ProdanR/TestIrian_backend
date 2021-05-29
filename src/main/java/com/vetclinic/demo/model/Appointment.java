@@ -6,7 +6,8 @@ import com.vetclinic.demo.enums.EnApStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
+
 
 @Entity
 public class Appointment {
@@ -31,9 +32,9 @@ public class Appointment {
             joinColumns = @JoinColumn(name = "appointment_id"),
             inverseJoinColumns = @JoinColumn(name = "service_id"))
     @JsonIgnore
-    private Set<Service> services;
+    private List<Service> services;
 
-    public Appointment(String animalName, EnApStatus status, LocalDateTime appointmentDateTime, Doctor doctor, Set<Service> services) {
+    public Appointment(String animalName, EnApStatus status, LocalDateTime appointmentDateTime, Doctor doctor, List<Service> services) {
         this.animalName = animalName;
         this.status = status;
         this.appointmentDateTime = appointmentDateTime;
@@ -93,11 +94,11 @@ public class Appointment {
         this.doctor = doctor;
     }
 
-    public Set<Service> getServices() {
+    public List<Service> getServices() {
         return services;
     }
 
-    public void setServices(Set<Service> services) {
+    public void setServices(List<Service> services) {
         this.services = services;
     }
 }
