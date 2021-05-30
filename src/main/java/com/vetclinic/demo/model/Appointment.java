@@ -39,7 +39,7 @@ public class Appointment {
 
 
 
-    public Appointment(String animalName, EnApStatus status, LocalDateTime appointmentDateTime, Doctor doctor, List<Service> services, Long totalCost) {
+    public Appointment(String animalName, EnApStatus status, LocalDateTime appointmentDateTime, Doctor doctor, List<Service> services, double totalCost) {
         this.animalName = animalName;
         this.status = status;
         this.appointmentDateTime = appointmentDateTime;

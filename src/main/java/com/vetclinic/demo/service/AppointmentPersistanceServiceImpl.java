@@ -39,30 +39,59 @@ public class AppointmentPersistanceServiceImpl implements AppointmentPersistance
     @Override
     public AppointmentDTO createAppointment(AppointmentRequest appointmentRequest, Long doctorId) throws Exception {
 
-        if(isDoctorPresent(doctorId))
-        {
-            Doctor doctor= doctorRepository.getById(doctorId);
+        if (isDoctorPresent(doctorId)) {
+            Doctor doctor = doctorRepository.getById(doctorId);
             Appointment appointment = new Appointment();
             BeanUtils.copyProperties(appointmentRequest, appointment);
             setAppointmentStatusOnCreated(appointment);
             appointment.setDoctor(doctor);
-            List<Service> services= serviceRepository.findByIdIn(appointmentRequest.getServices());
+            List<Service> services = serviceRepository.findByIdIn(appointmentRequest.getServices());
             appointment.setServices(services);
             appointment.setTotalCost(calculateTotalCost(services));
             Appointment saved = appointmentRepository.save(appointment);
             return buildAppointmentDTO(saved);
-        }
-        else
-        {
+        } else {
             throw new Exception("Doctor doesn't exist");
         }
 
     }
 
+    @Override
+    public List<AppointmentDTO> findAll() throws Exception {
+        List<Appointment> appointmentList = findAppointmentList();
+        if (isAppointmentEmptyList(appointmentList)) {
+            throw new Exception("Not appointments found in database");
+        } else {
+            return getResultList(appointmentList);
+        }
+    }
+
+    private List<Appointment> findAppointmentList() {
+        return appointmentRepository.findByOrderByAppointmentDateTimeDesc();
+    }
+
+    private boolean isAppointmentEmptyList(List<Appointment> appointmentList) {
+        if (appointmentList.isEmpty())
+            return true;
+        return false;
+    }
+
+    private List<AppointmentDTO> getResultList(List<Appointment> appointmentList) {
+        List<AppointmentDTO> appointmentDTOList = new ArrayList<AppointmentDTO>();
+        appointmentList.forEach(appointment -> addDTOToListAppointment(appointmentDTOList, appointment));
+        return appointmentDTOList;
+    }
+
+    private void addDTOToListAppointment(List<AppointmentDTO> appointmentDTOList, Appointment appointment) {
+        AppointmentDTO appointmentDTO = buildAppointmentDTO(appointment);
+        appointmentDTOList.add(appointmentDTO);
+    }
+
+
     private double calculateTotalCost(List<Service> services) {
-        double totalCost=0.0;
-        for (Service service: services) {
-            totalCost+=service.getPrice();
+        double totalCost = 0.0;
+        for (Service service : services) {
+            totalCost += service.getPrice();
         }
         return totalCost;
     }

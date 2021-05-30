@@ -17,7 +17,7 @@ public class ServiceRequest {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 }
