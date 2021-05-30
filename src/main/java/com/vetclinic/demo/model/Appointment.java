@@ -18,13 +18,15 @@ public class Appointment {
     private String animalName;
     private String diagnostic;
     private EnApStatus status;
+    private double totalCost;
 
     @Column
-    @JsonFormat(pattern = "yyyy-MM-ddThh:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
     private LocalDateTime appointmentDateTime;
 
     @ManyToOne
     @JoinColumn(name = "DOCTOR_ID")
+    @JsonIgnore
     private Doctor doctor;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -34,12 +36,16 @@ public class Appointment {
     @JsonIgnore
     private List<Service> services;
 
-    public Appointment(String animalName, EnApStatus status, LocalDateTime appointmentDateTime, Doctor doctor, List<Service> services) {
+
+
+
+    public Appointment(String animalName, EnApStatus status, LocalDateTime appointmentDateTime, Doctor doctor, List<Service> services, Long totalCost) {
         this.animalName = animalName;
         this.status = status;
         this.appointmentDateTime = appointmentDateTime;
         this.doctor = doctor;
         this.services = services;
+        this.totalCost = totalCost;
     }
 
     public Appointment() {
@@ -100,5 +106,13 @@ public class Appointment {
 
     public void setServices(List<Service> services) {
         this.services = services;
+    }
+
+    public double getTotalCost() {
+        return totalCost;
+    }
+
+    public void setTotalCost(double totalCost) {
+        this.totalCost = totalCost;
     }
 }

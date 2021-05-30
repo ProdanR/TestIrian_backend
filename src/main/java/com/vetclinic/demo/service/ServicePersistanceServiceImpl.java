@@ -21,6 +21,7 @@ public class ServicePersistanceServiceImpl implements ServicePersistanceService 
     @Autowired
     private AppointmentRepository appointmentRepository;
 
+
     @Override
     public ServiceDTO createService(ServiceRequest serviceRequest) {
         Service service = new Service();
@@ -54,16 +55,13 @@ public class ServicePersistanceServiceImpl implements ServicePersistanceService 
         }
     }
 
+
     private Appointment findAppintmentById(Long appointmentId) {
         return appointmentRepository.findById(appointmentId).get();
     }
 
-    private boolean isAppointmentPresent(Long appointmentId) {
-        if (appointmentRepository.findById(appointmentId).isPresent())
-            return true;
-        return false;
-    }
 
+    //return the list of serviceDTO
     private List<ServiceDTO> getResultList(List<Service> serviceList) {
         List<ServiceDTO> serviceDTOList = new ArrayList<ServiceDTO>();
         serviceList.forEach(service -> addDTOToList(serviceDTOList, service));
@@ -75,24 +73,29 @@ public class ServicePersistanceServiceImpl implements ServicePersistanceService 
         serviceDTOList.add(serviceDTO);
     }
 
-    private boolean isServiceEmptyList(List<Service> serviceList) {
-        if (serviceList.isEmpty())
-            return true;
-        return false;
-    }
-
-
-    private List<Service> findServiceList() {
-        return serviceRepository.findAll();
-    }
-
-
     private ServiceDTO buildServiceDTO(Service service) {
         return new ServiceDTO.BuilderServiceDTO()
                 .setId(service.getId())
                 .setName(service.getName())
                 .setPrice(service.getPrice())
                 .build();
+    }
+
+
+    private boolean isServiceEmptyList(List<Service> serviceList) {
+        if (serviceList.isEmpty())
+            return true;
+        return false;
+    }
+
+    private boolean isAppointmentPresent(Long appointmentId) {
+        if (appointmentRepository.findById(appointmentId).isPresent())
+            return true;
+        return false;
+    }
+
+    private List<Service> findServiceList() {
+        return serviceRepository.findAll();
     }
 
 

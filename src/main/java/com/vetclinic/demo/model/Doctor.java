@@ -1,5 +1,7 @@
 package com.vetclinic.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class Doctor {
 
     @OneToMany(mappedBy = "doctor",
             cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Appointment> appointments;
 
 

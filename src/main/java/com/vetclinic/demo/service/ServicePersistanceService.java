@@ -1,5 +1,6 @@
 package com.vetclinic.demo.service;
 
+import com.vetclinic.demo.model.Service;
 import com.vetclinic.demo.model.dto.ServiceDTO;
 import com.vetclinic.demo.model.request.ServiceRequest;
 
