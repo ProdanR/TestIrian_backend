@@ -8,7 +8,6 @@ import com.vetclinic.demo.model.dto.AppointmentDTO;
 import com.vetclinic.demo.model.dto.DoctorDTO;
 import com.vetclinic.demo.model.dto.ServiceDTO;
 import com.vetclinic.demo.model.request.AppointmentRequest;
-import com.vetclinic.demo.model.request.DoctorRequest;
 import com.vetclinic.demo.repository.AppointmentRepository;
 import com.vetclinic.demo.repository.DoctorRepository;
 import com.vetclinic.demo.repository.ServiceRepository;
@@ -40,14 +39,10 @@ public class AppointmentPersistanceServiceImpl implements AppointmentPersistance
     public AppointmentDTO createAppointment(AppointmentRequest appointmentRequest, Long doctorId) throws Exception {
 
         if (isDoctorPresent(doctorId)) {
-            Doctor doctor = doctorRepository.getById(doctorId);
+
             Appointment appointment = new Appointment();
-            BeanUtils.copyProperties(appointmentRequest, appointment);
+            copyPropertiesFromAppoimentRequest(appointmentRequest, appointment, doctorId);
             setAppointmentStatusOnCreated(appointment);
-            appointment.setDoctor(doctor);
-            List<Service> services = serviceRepository.findByIdIn(appointmentRequest.getServices());
-            appointment.setServices(services);
-            appointment.setTotalCost(calculateTotalCost(services));
             Appointment saved = appointmentRepository.save(appointment);
             return buildAppointmentDTO(saved);
         } else {
@@ -55,6 +50,7 @@ public class AppointmentPersistanceServiceImpl implements AppointmentPersistance
         }
 
     }
+
 
     @Override
     public List<AppointmentDTO> findAll() throws Exception {
@@ -65,6 +61,50 @@ public class AppointmentPersistanceServiceImpl implements AppointmentPersistance
             return getResultList(appointmentList);
         }
     }
+
+    @Override
+    public AppointmentDTO getAppointment(Long appointmentId) throws Exception {
+        if (isAppointmentPresent(appointmentId)) {
+            Appointment appointment = findAppointmentById(appointmentId);
+            return buildAppointmentDTO(appointment);
+        } else {
+            throw new Exception("Appointment doesn't exist");
+        }
+
+    }
+
+    @Override
+    public AppointmentDTO updateAppointment(AppointmentRequest appointmentRequest, Long appointmentId, Long doctorId) throws Exception {
+        if (isAppointmentPresent(appointmentId)) {
+            Appointment appointment = findAppointmentById(appointmentId);
+            copyPropertiesFromAppoimentRequest(appointmentRequest, appointment, doctorId);
+            Appointment saved = appointmentRepository.save(appointment);
+            return buildAppointmentDTO(saved);
+        } else {
+            throw new Exception("Appointment doen't exist");
+        }
+    }
+
+    private void copyPropertiesFromAppoimentRequest(AppointmentRequest appointmentRequest, Appointment appointment, Long doctorId) {
+        BeanUtils.copyProperties(appointmentRequest, appointment);
+        Doctor doctor = doctorRepository.getById(doctorId);
+        appointment.setDoctor(doctor);
+        List<Service> services = serviceRepository.findByIdIn(appointmentRequest.getServices());
+        appointment.setServices(services);
+        appointment.setTotalCost(calculateTotalCost(services));
+    }
+
+
+    private boolean isAppointmentPresent(Long appointmentId) {
+        if (appointmentRepository.findById(appointmentId).isPresent())
+            return true;
+        return false;
+    }
+
+    private Appointment findAppointmentById(Long appointmentId) {
+        return appointmentRepository.findById(appointmentId).get();
+    }
+
 
     private List<Appointment> findAppointmentList() {
         return appointmentRepository.findByOrderByAppointmentDateTimeDesc();
@@ -105,6 +145,7 @@ public class AppointmentPersistanceServiceImpl implements AppointmentPersistance
     private void setAppointmentStatusOnCreated(Appointment appointment) {
         appointment.setStatus(EnApStatus.CREATED);
     }
+
 
     private AppointmentDTO buildAppointmentDTO(Appointment appointment) {
         DoctorDTO doctorDTO = buildDoctorDTO(appointment.getDoctor());

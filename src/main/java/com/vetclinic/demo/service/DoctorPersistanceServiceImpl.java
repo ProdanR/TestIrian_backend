@@ -1,9 +1,7 @@
 package com.vetclinic.demo.service;
 
 import com.vetclinic.demo.model.Doctor;
-import com.vetclinic.demo.model.Service;
 import com.vetclinic.demo.model.dto.DoctorDTO;
-import com.vetclinic.demo.model.dto.ServiceDTO;
 import com.vetclinic.demo.model.request.DoctorRequest;
 import com.vetclinic.demo.repository.DoctorRepository;
 import org.springframework.beans.BeanUtils;

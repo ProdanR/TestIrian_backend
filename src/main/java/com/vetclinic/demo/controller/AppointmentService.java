@@ -32,4 +32,18 @@ public class AppointmentService implements AppointmentController {
         List<AppointmentDTO> appointmentDTOList = appointmentPersistanceService.findAll();
         return new ResponseEntity<>(appointmentDTOList, HttpStatus.OK);
     }
+
+    @Override
+    @GetMapping("/get/{appointmentId}")
+    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) throws Exception {
+        AppointmentDTO appointmentDTO = appointmentPersistanceService.getAppointment(appointmentId);
+        return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
+    }
+
+    @Override
+    @PutMapping("/update/{appointmentId}/{doctorId}")
+    public ResponseEntity<AppointmentDTO> updateAppointment(@RequestBody AppointmentRequest appointmentRequest, @PathVariable("appointmentId") Long appointmentId, @PathVariable("doctorId") Long doctorId) throws Exception {
+        AppointmentDTO appointmentDTO = appointmentPersistanceService.updateAppointment(appointmentRequest, appointmentId, doctorId);
+        return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
+    }
 }
