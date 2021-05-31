@@ -1,25 +1,23 @@
 package com.vetclinic.demo.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vetclinic.demo.enums.EnApStatus;
-import com.vetclinic.demo.model.Doctor;
-import com.vetclinic.demo.model.Service;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
+
 
 public class AppointmentDTO {
     private Long id;
     private String animalName;
     private String diagnostic;
     private EnApStatus status;
-    private Doctor doctor;
-    private List<Service> services;
-    @JsonFormat(pattern = "yyyy-MM-ddThh:mm")
+    private DoctorDTO doctor;
+    private List<ServiceDTO> services;
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
     private LocalDateTime appointmentDateTime;
+    private double totalCost;
+
 
     public AppointmentDTO(AppointmentDTO.BuilderAppointmentDTO builderAppointmentDTO) {
         this.id = builderAppointmentDTO.id;
@@ -29,6 +27,7 @@ public class AppointmentDTO {
         this.doctor = builderAppointmentDTO.doctor;
         this.services = builderAppointmentDTO.services;
         this.appointmentDateTime = builderAppointmentDTO.appointmentDateTime;
+        this.totalCost = builderAppointmentDTO.totalCost;
     }
 
 
@@ -49,16 +48,20 @@ public class AppointmentDTO {
         return status;
     }
 
-    public Doctor getDoctor() {
+    public DoctorDTO getDoctor() {
         return doctor;
     }
 
-    public List<Service> getServices() {
+    public List<ServiceDTO> getServices() {
         return services;
     }
 
     public LocalDateTime getAppointmentDateTime() {
         return appointmentDateTime;
+    }
+
+    public double getTotalCost() {
+        return totalCost;
     }
 
 
@@ -68,10 +71,11 @@ public class AppointmentDTO {
         private String animalName;
         private String diagnostic;
         private EnApStatus status;
-        private Doctor doctor;
-        private List<Service> services;
-        @JsonFormat(pattern = "yyyy-MM-ddThh:mm")
+        private DoctorDTO doctor;
+        private List<ServiceDTO> services;
+        @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
         private LocalDateTime appointmentDateTime;
+        private double totalCost;
 
         public BuilderAppointmentDTO setId(Long id) {
             this.id = id;
@@ -93,18 +97,23 @@ public class AppointmentDTO {
             return this;
         }
 
-        public BuilderAppointmentDTO setDoctor(Doctor doctor) {
+        public BuilderAppointmentDTO setDoctor(DoctorDTO doctor) {
             this.doctor = doctor;
             return this;
         }
 
-        public BuilderAppointmentDTO setAppointmentDateTime(List<Service> services) {
+        public BuilderAppointmentDTO setAppointmentDateTime(LocalDateTime appointmentDateTime) {
+            this.appointmentDateTime = appointmentDateTime;
+            return this;
+        }
+
+        public BuilderAppointmentDTO setServices(List<ServiceDTO> services) {
             this.services = services;
             return this;
         }
 
-        public BuilderAppointmentDTO setDoctor(LocalDateTime appointmentDateTime) {
-            this.appointmentDateTime = appointmentDateTime;
+        public BuilderAppointmentDTO setTotalCost(double totalCost) {
+            this.totalCost = totalCost;
             return this;
         }
 

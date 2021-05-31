@@ -1,8 +1,6 @@
 package com.vetclinic.demo.model.request;
 
 import com.vetclinic.demo.enums.EnApStatus;
-import com.vetclinic.demo.model.Doctor;
-import com.vetclinic.demo.model.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,40 +11,61 @@ public class AppointmentRequest {
 
     private LocalDateTime appointmentDateTime;
 
-    private Doctor doctor;
+    private List<Long> servicesId;
 
-    private List<Service> services;
+    private String diagnostic;
 
+    public List<Long> getServicesId() {
+        return servicesId;
+    }
+
+    public void setServicesId(List<Long> servicesId) {
+        this.servicesId = servicesId;
+    }
+
+    public EnApStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EnApStatus status) {
+        this.status = status;
+    }
+
+    private EnApStatus status;
 
     public String getAnimalName() {
         return animalName;
-    }
-
-    public void setAnimalName(String animalName) {
-        this.animalName = animalName;
     }
 
     public LocalDateTime getAppointmentDateTime() {
         return appointmentDateTime;
     }
 
+    public List<Long> getServices() {
+        return servicesId;
+    }
+
+    public void setAnimalName(String animalName) {
+        this.animalName = animalName;
+    }
+
+
     public void setAppointmentDateTime(LocalDateTime appointmentDateTime) {
         this.appointmentDateTime = appointmentDateTime;
     }
 
-    public Doctor getDoctor() {
-        return doctor;
+
+    public void setServices(List<Long> servicesId) {
+        this.servicesId = servicesId;
     }
 
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
+    public String getDiagnostic() {
+        return diagnostic;
     }
 
-    public List<Service> getServices() {
-        return services;
+    public void setDiagnostic(String diagnostic) {
+        this.diagnostic = diagnostic;
     }
 
-    public void setServices(List<Service> services) {
-        this.services = services;
-    }
+
 }

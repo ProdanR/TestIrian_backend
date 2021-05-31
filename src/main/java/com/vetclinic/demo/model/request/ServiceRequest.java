@@ -2,7 +2,8 @@ package com.vetclinic.demo.model.request;
 
 public class ServiceRequest {
     private String name;
-    private Long price;
+    private double price;
+
 
     public String getName() {
         return name;
@@ -12,11 +13,11 @@ public class ServiceRequest {
         this.name = name;
     }
 
-    public Long getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 }

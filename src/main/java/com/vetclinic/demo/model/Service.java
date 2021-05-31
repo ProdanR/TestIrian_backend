@@ -10,7 +10,7 @@ public class Service {
     private Long id;
 
     private String name;
-    private Long price;
+    private double price;
 
 
     public Service(String name, Long price) {
@@ -20,6 +20,7 @@ public class Service {
 
     public Service() {
     }
+
 
     public Long getId() {
         return id;
@@ -37,11 +38,11 @@ public class Service {
         this.name = name;
     }
 
-    public Long getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 }

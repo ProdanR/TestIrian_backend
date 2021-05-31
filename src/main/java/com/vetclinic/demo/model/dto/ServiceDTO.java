@@ -3,7 +3,7 @@ package com.vetclinic.demo.model.dto;
 public class ServiceDTO {
     private Long id;
     private String name;
-    private Long price;
+    private double price;
 
 
     public ServiceDTO(BuilderServiceDTO builderServiceDTO) {
@@ -22,7 +22,7 @@ public class ServiceDTO {
         return name;
     }
 
-    public Long getPrice() {
+    public double getPrice() {
         return price;
     }
 
@@ -31,7 +31,7 @@ public class ServiceDTO {
     public static class BuilderServiceDTO {
         private Long id;
         private String name;
-        private Long price;
+        private double price;
 
         public BuilderServiceDTO setId(Long id) {
             this.id = id;
@@ -43,7 +43,7 @@ public class ServiceDTO {
             return this;
         }
 
-        public BuilderServiceDTO setPrice(Long price) {
+        public BuilderServiceDTO setPrice(double price) {
             this.price = price;
             return this;
         }
