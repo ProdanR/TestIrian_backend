@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface DoctorPersistanceService {
     DoctorDTO createDoctor(DoctorRequest doctorRequest);
-    List<DoctorDTO> findAll() throws Exception;
+    List<DoctorDTO> findAll();
 }

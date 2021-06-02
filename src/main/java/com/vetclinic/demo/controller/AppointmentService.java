@@ -1,7 +1,6 @@
 package com.vetclinic.demo.controller;
 
 import com.vetclinic.demo.model.dto.AppointmentDTO;
-import com.vetclinic.demo.model.dto.DoctorDTO;
 import com.vetclinic.demo.model.request.AppointmentRequest;
 import com.vetclinic.demo.service.AppointmentPersistanceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,28 +20,28 @@ public class AppointmentService implements AppointmentController {
 
     @Override
     @PostMapping("/create/{doctorId}")
-    public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody AppointmentRequest appointmentRequest, @PathVariable("doctorId") Long doctorId) throws Exception {
+    public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody AppointmentRequest appointmentRequest, @PathVariable("doctorId") Long doctorId) {
         AppointmentDTO appointmentDTO = appointmentPersistanceService.createAppointment(appointmentRequest, doctorId);
         return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
     }
 
     @Override
     @GetMapping("/all")
-    public ResponseEntity<List<AppointmentDTO>> getAllAppoiments() throws Exception {
+    public ResponseEntity<List<AppointmentDTO>> getAllAppoiments() {
         List<AppointmentDTO> appointmentDTOList = appointmentPersistanceService.findAll();
         return new ResponseEntity<>(appointmentDTOList, HttpStatus.OK);
     }
 
     @Override
     @GetMapping("/get/{appointmentId}")
-    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) throws Exception {
+    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable("appointmentId") Long appointmentId){
         AppointmentDTO appointmentDTO = appointmentPersistanceService.getAppointment(appointmentId);
         return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
     }
 
     @Override
     @PutMapping("/update/{appointmentId}/{doctorId}")
-    public ResponseEntity<AppointmentDTO> updateAppointment(@RequestBody AppointmentRequest appointmentRequest, @PathVariable("appointmentId") Long appointmentId, @PathVariable("doctorId") Long doctorId) throws Exception {
+    public ResponseEntity<AppointmentDTO> updateAppointment(@RequestBody AppointmentRequest appointmentRequest, @PathVariable("appointmentId") Long appointmentId, @PathVariable("doctorId") Long doctorId) {
         AppointmentDTO appointmentDTO = appointmentPersistanceService.updateAppointment(appointmentRequest, appointmentId, doctorId);
         return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
     }

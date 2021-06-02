@@ -1,10 +1,8 @@
 package com.vetclinic.demo.controller;
 
 import com.vetclinic.demo.model.dto.DoctorDTO;
-import com.vetclinic.demo.model.dto.ServiceDTO;
 import com.vetclinic.demo.model.request.DoctorRequest;
 import com.vetclinic.demo.service.DoctorPersistanceService;
-import com.vetclinic.demo.service.ServicePersistanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +28,7 @@ public class DoctorService implements DoctorController {
 
     @Override
     @GetMapping("/all")
-    public ResponseEntity<List<DoctorDTO>> getAllDoctors() throws Exception {
+    public ResponseEntity<List<DoctorDTO>> getAllDoctors() {
         List<DoctorDTO> doctorDTOList = doctorPersistanceService.findAll();
         return new ResponseEntity<>(doctorDTOList, HttpStatus.OK);
     }

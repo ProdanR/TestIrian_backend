@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface DoctorController {
     ResponseEntity<DoctorDTO> createDoctor(DoctorRequest doctorRequest);
-    ResponseEntity<List<DoctorDTO>> getAllDoctors() throws Exception;
+    ResponseEntity<List<DoctorDTO>> getAllDoctors();
 }
