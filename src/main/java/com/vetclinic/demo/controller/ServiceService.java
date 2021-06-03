@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,21 +22,21 @@ public class ServiceService implements ServiceController {
 
     @Override
     @PostMapping("/create")
-    public ResponseEntity<ServiceDTO> createService(@RequestBody ServiceRequest serviceRequest) {
+    public ResponseEntity<ServiceDTO> createService(@Valid  @RequestBody ServiceRequest serviceRequest) {
         ServiceDTO serviceDTO = servicePersistanceService.createService(serviceRequest);
         return new ResponseEntity<>(serviceDTO, HttpStatus.CREATED);
     }
 
     @Override
     @GetMapping("/all")
-    public ResponseEntity<List<ServiceDTO>> getAllServices() throws Exception {
+    public ResponseEntity<List<ServiceDTO>> getAllServices() {
         List<ServiceDTO> serviceDTOList = servicePersistanceService.findAll();
         return new ResponseEntity<>(serviceDTOList, HttpStatus.OK);
     }
 
     @Override
     @GetMapping("/all/{appointmentId}")
-    public ResponseEntity<List<ServiceDTO>> getAllServicesFor(@PathVariable(value = "appointmentId") Long appointmentId) throws Exception {
+    public ResponseEntity<List<ServiceDTO>> getAllServicesFor(@PathVariable(value = "appointmentId") Long appointmentId){
         List<ServiceDTO> serviceDTOList = servicePersistanceService.getServicesFor(appointmentId);
         return new ResponseEntity<>(serviceDTOList, HttpStatus.OK);
 

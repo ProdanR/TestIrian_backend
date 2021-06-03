@@ -6,35 +6,47 @@ import com.vetclinic.demo.model.request.DoctorRequest;
 import com.vetclinic.demo.repository.DoctorRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 @org.springframework.stereotype.Service
-public class DoctorPersistanceServiceImpl implements DoctorPersistanceService{
+public class DoctorPersistanceServiceImpl implements DoctorPersistanceService {
 
     @Autowired
     DoctorRepository doctorRepository;
 
+
     @Override
     public DoctorDTO createDoctor(DoctorRequest doctorRequest) {
-        Doctor doctor=new Doctor();
-        BeanUtils.copyProperties(doctorRequest, doctor);
-        Doctor saved = doctorRepository.save(doctor);
+        Doctor doctor = new Doctor();
+        copyPropertiesFromDoctorRequest(doctorRequest, doctor);
+        Doctor saved = saveDoctor(doctor);
         return buildDoctorDTO(saved);
     }
 
     @Override
-    public List<DoctorDTO> findAll() throws Exception {
+    public List<DoctorDTO> findAll() {
         List<Doctor> doctorList = findDoctorsList();
         if (isDoctorEmptyList(doctorList)) {
-            throw new Exception("Not services found in database");
+            throw new EntityNotFoundException("No doctors found in database");
         } else {
             return getResultList(doctorList);
         }
     }
 
-    //return the list of doctorDTO
+
+    //================================================================================
+    // COPYING PROPERTIES FROM REQUEST TO OBJECT
+    //================================================================================
+    private void copyPropertiesFromDoctorRequest(DoctorRequest doctorRequest, Doctor doctor) {
+        BeanUtils.copyProperties(doctorRequest, doctor);
+    }
+
+
+    //================================================================================
+    // BUILDING DTO FOR DOCTOR TO RETURN IT TO FRONTEND
+    //================================================================================
     private List<DoctorDTO> getResultList(List<Doctor> doctorList) {
         List<DoctorDTO> doctorDTOList = new ArrayList<DoctorDTO>();
         doctorList.forEach(doctor -> addDTOToList(doctorDTOList, doctor));
@@ -46,21 +58,30 @@ public class DoctorPersistanceServiceImpl implements DoctorPersistanceService{
         doctorDTOList.add(doctorDTO);
     }
 
-    private boolean isDoctorEmptyList(List<Doctor> doctorList) {
-        if (doctorList.isEmpty())
-            return true;
-        return false;
-    }
-
-    private List<Doctor> findDoctorsList() {
-        return doctorRepository.findAll();
-    }
-
-
     private DoctorDTO buildDoctorDTO(Doctor doctor) {
         return new DoctorDTO.BuilderDoctorDTO()
                 .setId(doctor.getId())
                 .setName(doctor.getName())
                 .build();
     }
+
+
+    //================================================================================
+    // CALL ServiceRepository FOR FIND & SAVE
+    //================================================================================
+    private List<Doctor> findDoctorsList() {
+        return doctorRepository.findAll();
+    }
+
+    private Doctor saveDoctor(Doctor doctor) {
+        return doctorRepository.save(doctor);
+    }
+
+
+    private boolean isDoctorEmptyList(List<Doctor> doctorList) {
+        if (doctorList.isEmpty())
+            return true;
+        return false;
+    }
+
 }

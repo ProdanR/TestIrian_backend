@@ -7,8 +7,9 @@ import java.util.List;
 
 
 public interface AppointmentPersistanceService {
-    AppointmentDTO createAppointment(AppointmentRequest appointmentRequest, Long doctorId) throws Exception;
-    List<AppointmentDTO> findAll() throws Exception;
-    AppointmentDTO getAppointment(Long appointmentId) throws Exception;
-    AppointmentDTO updateAppointment(AppointmentRequest appointmentRequest, Long appointmentId, Long doctorId) throws Exception;
+    AppointmentDTO createAppointment(AppointmentRequest appointmentRequest, Long doctorId);
+    List<AppointmentDTO> findAll();
+    AppointmentDTO getAppointment(Long appointmentId);
+    AppointmentDTO updateAppointment(AppointmentRequest appointmentRequest, Long appointmentId, Long doctorId);
+    boolean removeAppointment(Long appointmentId);
 }

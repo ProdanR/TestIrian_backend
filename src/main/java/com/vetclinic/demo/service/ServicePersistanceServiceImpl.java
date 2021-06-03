@@ -9,6 +9,7 @@ import com.vetclinic.demo.repository.ServiceRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,43 +26,48 @@ public class ServicePersistanceServiceImpl implements ServicePersistanceService 
     @Override
     public ServiceDTO createService(ServiceRequest serviceRequest) {
         Service service = new Service();
-        BeanUtils.copyProperties(serviceRequest, service);
-        Service saved = serviceRepository.save(service);
+        copyPropertiesFromServiceRequest(serviceRequest, service);
+        Service saved = saveService(service);
         return buildServiceDTO(saved);
     }
 
     @Override
-    public List<ServiceDTO> findAll() throws Exception {
+    public List<ServiceDTO> findAll() {
         List<Service> serviceList = findServiceList();
         if (isServiceEmptyList(serviceList)) {
-            throw new Exception("Not services found in database");
+            throw new EntityNotFoundException("No services found in database");
         } else {
             return getResultList(serviceList);
         }
     }
 
     @Override
-    public List<ServiceDTO> getServicesFor(Long appointmentId) throws Exception {
+    public List<ServiceDTO> getServicesFor(Long appointmentId) {
         if (isAppointmentPresent(appointmentId)) {
             Appointment appointment = findAppintmentById(appointmentId);
             List<Service> services = appointment.getServices();
             if (isServiceEmptyList(services)) {
-                throw new RuntimeException("The appointment doesn't have services");
+                throw new EntityNotFoundException("Appointment with id:" + appointmentId.toString() + " not does't have any services");
             } else {
                 return getResultList(services);
             }
         } else {
-            throw new Exception("The appointment doesn't exist");
+            throw new EntityNotFoundException("Appointment with id:" + appointmentId.toString() + " not found in the database");
         }
     }
 
 
-    private Appointment findAppintmentById(Long appointmentId) {
-        return appointmentRepository.findById(appointmentId).get();
+    //================================================================================
+    // COPYING PROPERTIES FROM REQUEST TO OBJECT
+    //================================================================================
+    private void copyPropertiesFromServiceRequest(ServiceRequest serviceRequest, Service service) {
+        BeanUtils.copyProperties(serviceRequest, service);
     }
 
 
-    //return the list of serviceDTO
+    //================================================================================
+    // BUILDING DTO FOR SERVICE TO RETURN IT TO FRONTEND
+    //================================================================================
     private List<ServiceDTO> getResultList(List<Service> serviceList) {
         List<ServiceDTO> serviceDTOList = new ArrayList<ServiceDTO>();
         serviceList.forEach(service -> addDTOToList(serviceDTOList, service));
@@ -82,10 +88,19 @@ public class ServicePersistanceServiceImpl implements ServicePersistanceService 
     }
 
 
-    private boolean isServiceEmptyList(List<Service> serviceList) {
-        if (serviceList.isEmpty())
-            return true;
-        return false;
+    //================================================================================
+    // CALL ServiceRepository FOR FIND & SAVE
+    //================================================================================
+    private List<Service> findServiceList() {
+        return serviceRepository.findAll();
+    }
+
+    private Appointment findAppintmentById(Long appointmentId) {
+        return appointmentRepository.findById(appointmentId).get();
+    }
+
+    private Service saveService(Service service) {
+        return serviceRepository.save(service);
     }
 
     private boolean isAppointmentPresent(Long appointmentId) {
@@ -94,9 +109,14 @@ public class ServicePersistanceServiceImpl implements ServicePersistanceService 
         return false;
     }
 
-    private List<Service> findServiceList() {
-        return serviceRepository.findAll();
+
+    private boolean isServiceEmptyList(List<Service> serviceList) {
+        if (serviceList.isEmpty())
+            return true;
+        return false;
     }
+
+
 
 
 }

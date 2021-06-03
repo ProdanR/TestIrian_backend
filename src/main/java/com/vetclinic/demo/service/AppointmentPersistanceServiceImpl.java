@@ -14,6 +14,7 @@ import com.vetclinic.demo.repository.ServiceRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,87 +36,107 @@ public class AppointmentPersistanceServiceImpl implements AppointmentPersistance
     @Autowired
     ServiceRepository serviceRepository;
 
+
     @Override
-    public AppointmentDTO createAppointment(AppointmentRequest appointmentRequest, Long doctorId) throws Exception {
-
+    public AppointmentDTO createAppointment(AppointmentRequest appointmentRequest, Long doctorId) {
         if (isDoctorPresent(doctorId)) {
-
             Appointment appointment = new Appointment();
-            copyPropertiesFromAppoimentRequest(appointmentRequest, appointment, doctorId);
+            copyPropertiesFromAppoimentRequest(appointmentRequest, appointment);
+            setDoctorToAppointment(appointment, doctorId);
+            setServicesAndTotalCostToAppointment(appointment, appointmentRequest.getServicesId());
             setAppointmentStatusOnCreated(appointment);
-            Appointment saved = appointmentRepository.save(appointment);
+            Appointment saved = saveAppointment(appointment);
             return buildAppointmentDTO(saved);
         } else {
-            throw new Exception("Doctor doesn't exist");
+            throw new EntityNotFoundException("Doctor with id:" + doctorId.toString() + " not found in the database");
         }
-
     }
 
-
     @Override
-    public List<AppointmentDTO> findAll() throws Exception {
+    public List<AppointmentDTO> findAll() {
         List<Appointment> appointmentList = findAppointmentList();
         if (isAppointmentEmptyList(appointmentList)) {
-            throw new Exception("Not appointments found in database");
+            throw new EntityNotFoundException("No appointments found in database");
         } else {
             return getResultList(appointmentList);
         }
     }
 
     @Override
-    public AppointmentDTO getAppointment(Long appointmentId) throws Exception {
+    public AppointmentDTO getAppointment(Long appointmentId) {
         if (isAppointmentPresent(appointmentId)) {
             Appointment appointment = findAppointmentById(appointmentId);
             return buildAppointmentDTO(appointment);
         } else {
-            throw new Exception("Appointment doesn't exist");
+            throw new EntityNotFoundException("Appointment with id:" + appointmentId.toString() + " not found in the database");
         }
 
     }
 
     @Override
-    public AppointmentDTO updateAppointment(AppointmentRequest appointmentRequest, Long appointmentId, Long doctorId) throws Exception {
+    public AppointmentDTO updateAppointment(AppointmentRequest appointmentRequest, Long appointmentId, Long doctorId) {
         if (isAppointmentPresent(appointmentId)) {
             Appointment appointment = findAppointmentById(appointmentId);
-            copyPropertiesFromAppoimentRequest(appointmentRequest, appointment, doctorId);
-            Appointment saved = appointmentRepository.save(appointment);
+            copyPropertiesFromAppoimentRequest(appointmentRequest, appointment);
+            setDoctorToAppointment(appointment, doctorId);
+            setServicesAndTotalCostToAppointment(appointment, appointmentRequest.getServicesId());
+            Appointment saved = saveAppointment(appointment);
             return buildAppointmentDTO(saved);
         } else {
-            throw new Exception("Appointment doen't exist");
+            throw new EntityNotFoundException("Appointment with id:" + appointmentId.toString() + " not found in the database");
         }
     }
 
-    private void copyPropertiesFromAppoimentRequest(AppointmentRequest appointmentRequest, Appointment appointment, Long doctorId) {
+    @Override
+    public boolean removeAppointment(Long appointmentId) {
+        if (isAppointmentPresent(appointmentId)) {
+            appointmentRepository.deleteById(appointmentId);
+            return true;
+        } else {
+            throw new EntityNotFoundException("Appointment with id:" + appointmentId.toString() + " not found in the database");
+        }
+    }
+
+
+    //================================================================================
+    // COPYING/SETTING PROPERTIES FROM REQUEST TO OBJECT
+    //================================================================================
+    private void copyPropertiesFromAppoimentRequest(AppointmentRequest appointmentRequest, Appointment appointment) {
         BeanUtils.copyProperties(appointmentRequest, appointment);
-        Doctor doctor = doctorRepository.getById(doctorId);
+    }
+
+
+    //================================================================================
+    // SETTING STATUS,DOCTOR,SERVICES AND TOTALCOST TO APPOINTMENT
+    //================================================================================
+    private void setAppointmentStatusOnCreated(Appointment appointment) {
+        appointment.setStatus(EnApStatus.CREATED);
+    }
+
+    private void setDoctorToAppointment(Appointment appointment, Long doctorId) {
+        Doctor doctor = findDoctorById(doctorId);
         appointment.setDoctor(doctor);
-        List<Service> services = serviceRepository.findByIdIn(appointmentRequest.getServices());
+    }
+
+    private void setServicesAndTotalCostToAppointment(Appointment appointment, List<Long> servicesId) {
+        List<Service> services = findServicesByIds(servicesId);
         appointment.setServices(services);
-        appointment.setTotalCost(calculateTotalCost(services));
+        double totalCost = calculateTotalCost(services);
+        appointment.setTotalCost(totalCost);
+    }
+
+    private double calculateTotalCost(List<Service> services) {
+        double totalCost = 0.0;
+        for (Service service : services) {
+            totalCost += service.getPrice();
+        }
+        return totalCost;
     }
 
 
-    private boolean isAppointmentPresent(Long appointmentId) {
-        if (appointmentRepository.findById(appointmentId).isPresent())
-            return true;
-        return false;
-    }
-
-    private Appointment findAppointmentById(Long appointmentId) {
-        return appointmentRepository.findById(appointmentId).get();
-    }
-
-
-    private List<Appointment> findAppointmentList() {
-        return appointmentRepository.findByOrderByAppointmentDateTimeDesc();
-    }
-
-    private boolean isAppointmentEmptyList(List<Appointment> appointmentList) {
-        if (appointmentList.isEmpty())
-            return true;
-        return false;
-    }
-
+    //================================================================================
+    // BUILDING DTO FOR APPOINTMENT TO RETURN IT TO FRONTEND
+    //================================================================================
     private List<AppointmentDTO> getResultList(List<Appointment> appointmentList) {
         List<AppointmentDTO> appointmentDTOList = new ArrayList<AppointmentDTO>();
         appointmentList.forEach(appointment -> addDTOToListAppointment(appointmentDTOList, appointment));
@@ -126,26 +147,6 @@ public class AppointmentPersistanceServiceImpl implements AppointmentPersistance
         AppointmentDTO appointmentDTO = buildAppointmentDTO(appointment);
         appointmentDTOList.add(appointmentDTO);
     }
-
-
-    private double calculateTotalCost(List<Service> services) {
-        double totalCost = 0.0;
-        for (Service service : services) {
-            totalCost += service.getPrice();
-        }
-        return totalCost;
-    }
-
-    private boolean isDoctorPresent(Long doctorId) {
-        if (doctorRepository.findById(doctorId).isPresent())
-            return true;
-        return false;
-    }
-
-    private void setAppointmentStatusOnCreated(Appointment appointment) {
-        appointment.setStatus(EnApStatus.CREATED);
-    }
-
 
     private AppointmentDTO buildAppointmentDTO(Appointment appointment) {
         DoctorDTO doctorDTO = buildDoctorDTO(appointment.getDoctor());
@@ -162,6 +163,10 @@ public class AppointmentPersistanceServiceImpl implements AppointmentPersistance
                 .build();
     }
 
+
+    //================================================================================
+    // BUILDING DTO FOR SERVICE TO SET THE FIELD OF APPOINTMENT_DTO
+    //================================================================================
     private List<ServiceDTO> buildServiceDTOList(List<Service> services) {
         List<ServiceDTO> serviceDTOList = new ArrayList<ServiceDTO>();
         services.forEach(service -> addDTOToList(serviceDTOList, service));
@@ -181,10 +186,67 @@ public class AppointmentPersistanceServiceImpl implements AppointmentPersistance
                 .build();
     }
 
+
+    //================================================================================
+    // BUILDING DTO FOR DOCTOR TO SET THE FIELD OF APPOINTMENT_DTO
+    //================================================================================
     private DoctorDTO buildDoctorDTO(Doctor doctor) {
         return new DoctorDTO.BuilderDoctorDTO()
                 .setId(doctor.getId())
                 .setName(doctor.getName())
                 .build();
     }
+
+
+    //================================================================================
+    // CALL ServiceRepository FOR FIND & SAVE
+    //================================================================================
+    private Appointment saveAppointment(Appointment appointment) {
+        return appointmentRepository.save(appointment);
+    }
+
+    private Appointment findAppointmentById(Long appointmentId) {
+        return appointmentRepository.findById(appointmentId).get();
+    }
+
+    private List<Appointment> findAppointmentList() {
+        return appointmentRepository.findByOrderByAppointmentDateTimeDesc();
+    }
+
+    private boolean isAppointmentPresent(Long appointmentId) {
+        if (appointmentRepository.findById(appointmentId).isPresent())
+            return true;
+        return false;
+    }
+
+
+    //================================================================================
+    // CALL ServiceRepository FOR FIND
+    //================================================================================
+    private List<Service> findServicesByIds(List<Long> servicesId) {
+        return serviceRepository.findByIdIn(servicesId);
+    }
+
+
+    //================================================================================
+    // CALL DoctorRepository FOR FIND
+    //================================================================================
+    private Doctor findDoctorById(Long doctorId) {
+        return doctorRepository.getById(doctorId);
+    }
+
+    private boolean isDoctorPresent(Long doctorId) {
+        if (doctorRepository.findById(doctorId).isPresent())
+            return true;
+        return false;
+    }
+
+
+    private boolean isAppointmentEmptyList(List<Appointment> appointmentList) {
+        if (appointmentList.isEmpty())
+            return true;
+        return false;
+    }
+
+
 }

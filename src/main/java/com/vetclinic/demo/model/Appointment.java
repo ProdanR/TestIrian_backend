@@ -37,8 +37,6 @@ public class Appointment {
     private List<Service> services;
 
 
-
-
     public Appointment(String animalName, EnApStatus status, LocalDateTime appointmentDateTime, Doctor doctor, List<Service> services, double totalCost) {
         this.animalName = animalName;
         this.status = status;
@@ -115,7 +113,6 @@ public class Appointment {
     public void setTotalCost(double totalCost) {
         this.totalCost = totalCost;
     }
-
 
 
 }
