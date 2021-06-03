@@ -18,10 +18,10 @@ import javax.persistence.EntityNotFoundException;
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
-    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        String errorDetails = ex.getMessage();
-        ErrorModel error = new ErrorModel(HttpStatus.BAD_REQUEST, "This path is not recognized", errorDetails);
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
+                                                                   HttpStatus status, WebRequest request) {
+        ErrorModel error = new ErrorModel(HttpStatus.BAD_REQUEST, "Try another path, this one is not handled", ex.getMessage());
+        return handleExceptionInternal(ex, error, headers, HttpStatus.BAD_REQUEST, request);
     }
 
     @Override
@@ -39,9 +39,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    private ResponseEntity<ErrorModel> handleArgumentTypeMismatch(EntityNotFoundException ex) {
+    private ResponseEntity<ErrorModel> handleArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
         String errorDetails = ex.getMessage();
-        ErrorModel error = new ErrorModel(HttpStatus.BAD_REQUEST, "Entity not found", errorDetails);
+        ErrorModel error = new ErrorModel(HttpStatus.BAD_REQUEST, "Type mismatch", errorDetails);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }

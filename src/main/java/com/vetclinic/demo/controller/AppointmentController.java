@@ -11,5 +11,5 @@ public interface AppointmentController {
     ResponseEntity<List<AppointmentDTO>> getAllAppoiments();
     ResponseEntity<AppointmentDTO> getAppointmentById(Long appointmentId);
     ResponseEntity<AppointmentDTO> updateAppointment(AppointmentRequest appointmentRequest, Long appointmentId, Long doctorId);
-
+    boolean removeAppointment(Long appointmentId);
 }

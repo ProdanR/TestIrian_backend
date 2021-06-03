@@ -11,4 +11,5 @@ public interface AppointmentPersistanceService {
     List<AppointmentDTO> findAll();
     AppointmentDTO getAppointment(Long appointmentId);
     AppointmentDTO updateAppointment(AppointmentRequest appointmentRequest, Long appointmentId, Long doctorId);
+    boolean removeAppointment(Long appointmentId);
 }

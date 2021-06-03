@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,7 +22,7 @@ public class DoctorService implements DoctorController {
 
     @Override
     @PostMapping("/create")
-    public ResponseEntity<DoctorDTO> createDoctor(@RequestBody DoctorRequest doctorRequest) {
+    public ResponseEntity<DoctorDTO> createDoctor(@Valid @RequestBody DoctorRequest doctorRequest) {
         DoctorDTO doctorDTO = doctorPersistanceService.createDoctor(doctorRequest);
         return new ResponseEntity<>(doctorDTO, HttpStatus.CREATED);
     }

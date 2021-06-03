@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -20,7 +21,7 @@ public class AppointmentService implements AppointmentController {
 
     @Override
     @PostMapping("/create/{doctorId}")
-    public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody AppointmentRequest appointmentRequest, @PathVariable("doctorId") Long doctorId) {
+    public ResponseEntity<AppointmentDTO> createAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest, @PathVariable("doctorId") Long doctorId) {
         AppointmentDTO appointmentDTO = appointmentPersistanceService.createAppointment(appointmentRequest, doctorId);
         return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
     }
@@ -34,15 +35,22 @@ public class AppointmentService implements AppointmentController {
 
     @Override
     @GetMapping("/get/{appointmentId}")
-    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable("appointmentId") Long appointmentId){
+    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) {
         AppointmentDTO appointmentDTO = appointmentPersistanceService.getAppointment(appointmentId);
         return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
     }
 
     @Override
     @PutMapping("/update/{appointmentId}/{doctorId}")
-    public ResponseEntity<AppointmentDTO> updateAppointment(@RequestBody AppointmentRequest appointmentRequest, @PathVariable("appointmentId") Long appointmentId, @PathVariable("doctorId") Long doctorId) {
+    public ResponseEntity<AppointmentDTO> updateAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest, @PathVariable("appointmentId") Long appointmentId, @PathVariable("doctorId") Long doctorId) {
         AppointmentDTO appointmentDTO = appointmentPersistanceService.updateAppointment(appointmentRequest, appointmentId, doctorId);
         return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
+    }
+
+    @Override
+    @DeleteMapping("/delete/{appointmentId}")
+    public boolean removeAppointment(@PathVariable("appointmentId") Long appointmentId) {
+        return appointmentPersistanceService.removeAppointment(appointmentId);
+
     }
 }

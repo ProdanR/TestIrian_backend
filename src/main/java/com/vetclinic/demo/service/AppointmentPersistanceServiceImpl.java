@@ -87,6 +87,16 @@ public class AppointmentPersistanceServiceImpl implements AppointmentPersistance
         }
     }
 
+    @Override
+    public boolean removeAppointment(Long appointmentId) {
+        if (isAppointmentPresent(appointmentId)) {
+            appointmentRepository.deleteById(appointmentId);
+            return true;
+        } else {
+            throw new EntityNotFoundException("Appointment with id:" + appointmentId.toString() + " not found in the database");
+        }
+    }
+
 
     //================================================================================
     // COPYING/SETTING PROPERTIES FROM REQUEST TO OBJECT

@@ -2,13 +2,16 @@ package com.vetclinic.demo.model.request;
 
 import com.vetclinic.demo.enums.EnApStatus;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class AppointmentRequest {
 
+    @NotEmpty(message = "Appointment must have a animal")
     private String animalName;
 
+    @NotEmpty(message = "Appointment must have a date")
     private LocalDateTime appointmentDateTime;
 
     private List<Long> servicesId;
